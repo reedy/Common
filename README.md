@@ -49,6 +49,8 @@ DataValues Common has been written by the Wikidata team, as [Wikimedia Germany]
 
 ## Release notes
 
+* Removed `MonolingualTextValue` and `MultilingualTextValue` (moved to the DataValues component)
+
 ### 0.3.1 (2015-08-14)
 
 * The component can now be installed together with DataValues Interfaces 0.1.5
