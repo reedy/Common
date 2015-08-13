@@ -49,6 +49,10 @@ DataValues Common has been written by the Wikidata team, as [Wikimedia Germany]
 
 ## Release notes
 
+### 0.3.2 (2015-09-01)
+
+* Added `TrimmingStringNormalizer`
+
 ### 0.3.1 (2015-08-14)
 
 * The component can now be installed together with DataValues Interfaces 0.1.5
