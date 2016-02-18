@@ -7,6 +7,7 @@ use ValueParsers\BoolParser;
 
 /**
  * @covers ValueParsers\BoolParser
+ * @covers ValueParsers\StringValueParser
  *
  * @group ValueParsers
  * @group DataValueExtensions
@@ -29,30 +30,21 @@ class BoolParserTest extends StringValueParserTest {
 	 * @see ValueParserTestBase::validInputProvider
 	 */
 	public function validInputProvider() {
-		$argLists = array();
+		return array(
+			array( 'yes', new BooleanValue( true ) ),
+			array( 'on', new BooleanValue( true ) ),
+			array( '1', new BooleanValue( true ) ),
+			array( 'true', new BooleanValue( true ) ),
+			array( 'no', new BooleanValue( false ) ),
+			array( 'off', new BooleanValue( false ) ),
+			array( '0', new BooleanValue( false ) ),
+			array( 'false', new BooleanValue( false ) ),
 
-		$valid = array(
-			'yes' => true,
-			'on' => true,
-			'1' => true,
-			'true' => true,
-			'no' => false,
-			'off' => false,
-			'0' => false,
-			'false' => false,
-
-			'YeS' => true,
-			'ON' => true,
-			'No' => false,
-			'OfF' => false,
+			array( 'YeS', new BooleanValue( true ) ),
+			array( 'ON', new BooleanValue( true ) ),
+			array( 'No', new BooleanValue( false ) ),
+			array( 'OfF', new BooleanValue( false ) ),
 		);
-
-		foreach ( $valid as $value => $expected ) {
-			$expected = new BooleanValue( $expected );
-			$argLists[] = array( (string)$value, $expected );
-		}
-
-		return $argLists;
 	}
 
 	/**

@@ -28,42 +28,100 @@ class MultilingualTextValueTest extends DataValueTest {
 	}
 
 	public function validConstructorArgumentsProvider() {
-		$argLists = array();
-
-		$argLists[] = array( array() );
-		$argLists[] = array( array( new MonolingualTextValue( 'en', 'foo' ) ) );
-		$argLists[] = array( array( new MonolingualTextValue( 'en', 'foo' ), new MonolingualTextValue( 'de', 'foo' ) ) );
-		$argLists[] = array( array( new MonolingualTextValue( 'en', 'foo' ), new MonolingualTextValue( 'de', 'bar' ) ) );
-		$argLists[] = array( array(
-			new MonolingualTextValue( 'en', 'foo' ),
-			new MonolingualTextValue( 'de', ' foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz ' )
-		) );
-
-		return $argLists;
+		return array(
+			array( array() ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+			) ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				new MonolingualTextValue( 'de', 'foo' ),
+			) ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				new MonolingualTextValue( 'de', 'bar' ),
+			) ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				new MonolingualTextValue( 'de', ' foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz ' ),
+			) ),
+		);
 	}
 
 	public function invalidConstructorArgumentsProvider() {
-		$argLists = array();
+		return array(
+			array( array( 42 ) ),
+			array( array( false ) ),
+			array( array( true ) ),
+			array( array( null ) ),
+			array( array( array() ) ),
+			array( array( 'foo' ) ),
 
-		$argLists[] = array( array( 42 ) );
-		$argLists[] = array( array( false ) );
-		$argLists[] = array( array( true ) );
-		$argLists[] = array( array( null ) );
-		$argLists[] = array( array( array() ) );
-		$argLists[] = array( array( 'foo' ) );
+			array( array( 42 => 'foo' ) ),
+			array( array( '' => 'foo' ) ),
+			array( array( 'en' => 42 ) ),
+			array( array( 'en' => null ) ),
+			array( array( 'en' => true ) ),
+			array( array( 'en' => array() ) ),
+			array( array( 'en' => 4.2 ) ),
 
-		$argLists[] = array( array( 42 => 'foo' ) );
-		$argLists[] = array( array( '' => 'foo' ) );
-		$argLists[] = array( array( 'en' => 42 ) );
-		$argLists[] = array( array( 'en' => null ) );
-		$argLists[] = array( array( 'en' => true ) );
-		$argLists[] = array( array( 'en' => array() ) );
-		$argLists[] = array( array( 'en' => 4.2 ) );
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				false,
+			) ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				'foobar',
+			) ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				new MonolingualTextValue( 'en', 'bar' ),
+			) ),
+		);
+	}
 
-		$argLists[] = array( array( new MonolingualTextValue( 'en', 'foo' ), false ) );
-		$argLists[] = array( array( new MonolingualTextValue( 'en', 'foo' ), 'foobar' ) );
+	public function testNewFromArray() {
+		$array = array( array( 'text' => 'foo', 'language' => 'en' ) );
+		$value = MultilingualTextValue::newFromArray( $array );
+		$this->assertSame( $array, $value->getArrayValue() );
+	}
 
-		return $argLists;
+	/**
+	 * @dataProvider invalidArrayProvider
+	 */
+	public function testNewFromArrayWithInvalidArray( array $array ) {
+		$this->setExpectedException( 'DataValues\IllegalValueException' );
+		MultilingualTextValue::newFromArray( $array );
+	}
+
+	public function invalidArrayProvider() {
+		return array(
+			array( array( null ) ),
+			array( array( '' ) ),
+			array( array( array() ) ),
+			array( array( array( 'en', 'foo' ) ) ),
+		);
+	}
+
+	/**
+	 * @dataProvider getSortKeyProvider
+	 */
+	public function testGetSortKey( array $monolingualValues, $expected ) {
+		$value = new MultilingualTextValue( $monolingualValues );
+		$this->assertSame( $expected, $value->getSortKey() );
+	}
+
+	public function getSortKeyProvider() {
+		return array(
+			array( array(), '' ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+			), 'enfoo' ),
+			array( array(
+				new MonolingualTextValue( 'en', 'foo' ),
+				new MonolingualTextValue( 'de', 'bar' ),
+			), 'enfoo' ),
+		);
 	}
 
 	/**

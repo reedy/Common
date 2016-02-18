@@ -137,6 +137,10 @@ class MultilingualTextValue extends DataValueObject {
 		$values = array();
 
 		foreach ( $data as $monolingualValue ) {
+			if ( !is_array( $monolingualValue ) ) {
+				throw new IllegalValueException( '$data must be an array of arrays' );
+			}
+
 			$values[] = MonolingualTextValue::newFromArray( $monolingualValue );
 		}
 

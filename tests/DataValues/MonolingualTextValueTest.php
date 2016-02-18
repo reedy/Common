@@ -27,35 +27,59 @@ class MonolingualTextValueTest extends DataValueTest {
 	}
 
 	public function validConstructorArgumentsProvider() {
-		$argLists = array();
-
-		$argLists[] = array( 'en', 'foo' );
-		$argLists[] = array( 'en', ' foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz ' );
-
-		return $argLists;
+		return array(
+			array( 'en', 'foo' ),
+			array( 'en', ' foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz foo bar baz ' ),
+		);
 	}
 
 	public function invalidConstructorArgumentsProvider() {
-		$argLists = array();
+		return array(
+			array( 42, null ),
+			array( array(), null ),
+			array( false, null ),
+			array( true, null ),
+			array( null, null ),
+			array( 'en', 42 ),
+			array( 'en', false ),
+			array( 'en', array() ),
+			array( 'en', null ),
+			array( '', 'foo' ),
+		);
+	}
 
-		$argLists[] = array( 42, null );
-		$argLists[] = array( array(), null );
-		$argLists[] = array( false, null );
-		$argLists[] = array( true, null );
-		$argLists[] = array( null, null );
-		$argLists[] = array( 'en', 42 );
-		$argLists[] = array( 'en', false );
-		$argLists[] = array( 'en', array() );
-		$argLists[] = array( 'en', null );
-		$argLists[] = array( '', 'foo' );
+	public function testNewFromArray() {
+		$array = array( 'text' => 'foo', 'language' => 'en' );
+		$value = MonolingualTextValue::newFromArray( $array );
+		$this->assertSame( $array, $value->getArrayValue() );
+	}
 
-		return $argLists;
+	/**
+	 * @dataProvider invalidArrayProvider
+	 */
+	public function testNewFromArrayWithInvalidArray( array $array ) {
+		$this->setExpectedException( 'DataValues\IllegalValueException' );
+		MonolingualTextValue::newFromArray( $array );
+	}
+
+	public function invalidArrayProvider() {
+		return array(
+			array( array() ),
+			array( array( null ) ),
+			array( array( '' ) ),
+			array( array( 'en', 'foo' ) ),
+			array( array( 'language' => 'en' ) ),
+			array( array( 'text' => 'foo' ) ),
+		);
+	}
+
+	public function testGetSortKey() {
+		$value = new MonolingualTextValue( 'en', 'foo' );
+		$this->assertSame( 'enfoo', $value->getSortKey() );
 	}
 
 	/**
 	 * @dataProvider instanceProvider
-	 * @param MonolingualTextValue $text
-	 * @param array $arguments
 	 */
 	public function testGetText( MonolingualTextValue $text, array $arguments ) {
 		$this->assertEquals( $arguments[1], $text->getText() );
@@ -63,8 +87,6 @@ class MonolingualTextValueTest extends DataValueTest {
 
 	/**
 	 * @dataProvider instanceProvider
-	 * @param MonolingualTextValue $text
-	 * @param array $arguments
 	 */
 	public function testGetLanguageCode( MonolingualTextValue $text, array $arguments ) {
 		$this->assertEquals( $arguments[0], $text->getLanguageCode() );
